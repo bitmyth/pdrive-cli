@@ -1,12 +1,15 @@
 # Personal Drive CLI
 
+# Install 
+go install github.com/bitmyth/pdrive-cli/cli/cmd/pd
+
 ### run cli from source
 
 ```shell
  go run cli/cmd/pd/main.go file upload --file  $FILEPATH
 ```
 
-### install
+### install from source
 go install ./cli/cmd/pd
 
 ### login command
