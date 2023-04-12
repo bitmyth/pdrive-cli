@@ -70,6 +70,14 @@ func runRoot(f *factory.Factory) {
 			return
 		case "ls", "l":
 			fileLsCmd.Ls(f)
+		case "n":
+			fileLsCmd.Page++
+			fileLsCmd.Ls(f)
+		case "p":
+			if fileLsCmd.Page > 1 {
+				fileLsCmd.Page--
+			}
+			fileLsCmd.Ls(f)
 		case "rm":
 			fileDeleteCmd.Delete(f, op[1])
 		case "mkdir":

@@ -18,6 +18,7 @@ var (
 	Dir     = 0
 	Root    = File{ID: 0, Dir: 0}
 	Current = Root
+	Page    = 1
 )
 
 func Cd(dir File) {
@@ -37,7 +38,8 @@ func Ls(f *factory.Factory) {
 	hostname, _ := cfg.DefaultHost()
 
 	query := url.Values{}
-	query.Add("size", "100")
+	query.Add("size", "20")
+	query.Add("page", strconv.Itoa(Page))
 	//query.Add("sort", `{"id":"desc"}`)
 	query.Add("dir", strconv.Itoa(int(Dir)))
 
