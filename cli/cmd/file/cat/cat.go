@@ -35,5 +35,5 @@ func Cat(f *factory.Factory, id string) {
 	infoColor := cs.Cyan
 	// save file
 	fmt.Fprintln(f.IOStreams.Out, "Size:", infoColor(fmt.Sprintf("%d", len(respData))))
-	fmt.Fprintln(f.IOStreams.Out, respData)
+	fmt.Fprintln(f.IOStreams.Out, cs.Green(string(respData)))
 }

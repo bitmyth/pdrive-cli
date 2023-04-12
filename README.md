@@ -1,7 +1,8 @@
 # Personal Drive CLI
+Current tag v1.1.4
 
 # Install 
-go install github.com/bitmyth/pdrive-cli/cli/cmd/pd
+go install github.com/bitmyth/pdrive-cli/cli/cmd/pd@latest
 
 ### run cli from source
 

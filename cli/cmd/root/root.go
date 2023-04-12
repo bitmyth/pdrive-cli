@@ -54,7 +54,7 @@ func NewCmdRoot(f *factory.Factory) *cobra.Command {
 
 func runRoot(f *factory.Factory) {
 	for {
-		input, err := f.Prompter.Input(">", "")
+		input, err := f.Prompter.Input("", "")
 		if err != nil {
 			return
 		}
@@ -69,6 +69,14 @@ func runRoot(f *factory.Factory) {
 		case "exit":
 			return
 		case "ls", "l":
+			fileLsCmd.Ls(f)
+		case "n":
+			fileLsCmd.Page++
+			fileLsCmd.Ls(f)
+		case "p":
+			if fileLsCmd.Page > 1 {
+				fileLsCmd.Page--
+			}
 			fileLsCmd.Ls(f)
 		case "rm":
 			fileDeleteCmd.Delete(f, op[1])

@@ -235,6 +235,7 @@ func ConfigDir() string {
 const (
 	defaultSource  = "default"
 	Host           = "PD_HOST"
+	Scheme         = "SCHEME"
 	pdrive         = "pdrive.com"
 	hostsKey       = "hosts"
 	defaultHostKey = "default_host"
@@ -269,6 +270,13 @@ func tokenForHost(cfg *Config, host string) (string, string) {
 	return "", defaultSource
 }
 
+func DefaultScheme() (string, string) {
+	if host := os.Getenv(Scheme); host != "" {
+		return host, Scheme
+	}
+	return "https", ""
+}
+
 func DefaultHost() (string, string) {
 	cfg, _ := Read()
 	return defaultHost(cfg)
@@ -278,6 +286,12 @@ func defaultHost(cfg *Config) (string, string) {
 	if host := os.Getenv(Host); host != "" {
 		return host, Host
 	}
+
+	s, _ := cfg.Get([]string{"env"})
+	if s == "dev" {
+		return "localhost", ""
+	}
+
 	if cfg != nil {
 		keys, err := cfg.Get([]string{defaultHostKey})
 		if err == nil && keys != "" {

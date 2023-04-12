@@ -6,8 +6,10 @@ import (
 	"github.com/bitmyth/pdrive-cli/cli/cmd/factory"
 	"github.com/bitmyth/pdrive-cli/cli/config"
 	"github.com/bitmyth/pdrive-cli/cli/iostreams"
+	"github.com/bitmyth/upload/client"
 	"github.com/spf13/cobra"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -69,8 +71,11 @@ func uploadRun(opts *Options) error {
 	}
 	stat, err := file.Stat()
 	if err != nil {
+		fmt.Fprintln(opts.IO.Out, errColor(err.Error()))
 		return err
 	}
+	fmt.Fprintln(opts.IO.Out, file.Name(), " Size: ", stat.Size())
+
 	if stat.IsDir() {
 		err = uploadDir(opts)
 		if err != nil {
@@ -78,10 +83,91 @@ func uploadRun(opts *Options) error {
 			return err
 		}
 	} else {
-		err = uploadFile(opts, FileInfo{FileInfo: stat, Path: opts.File, Dir: opts.Dir})
+		// file size > 1MB
+		if stat.Size() > 1<<20 {
+			err = uploadBigFile(opts, FileInfo{FileInfo: stat, Path: opts.File, Dir: opts.Dir})
+		} else {
+			err = uploadFile(opts, FileInfo{FileInfo: stat, Path: opts.File, Dir: opts.Dir})
+		}
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func uploadBigFile(opts *Options, info FileInfo) error {
+	cs := opts.IO.ColorScheme()
+	infoColor := cs.Cyan
+	httpClient, _ := opts.HttpClient()
+
+	cfg := opts.Config
+	hostname, _ := cfg.DefaultHost()
+
+	url := fmt.Sprintf("%s://%s/v1/files", opts.HttpSchema, hostname)
+
+	println(url)
+	// Chunked Upload
+	client.BaseUrl = url
+	stat, err := os.Stat(info.Path)
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+
+	c := &client.Client{FileInfo: stat, Filepath: info.Path, Transport: httpClient.Transport}
+
+	err = c.NewUpload()
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+
+	err = c.Upload()
+	if err != nil {
+		log.Fatalln(err)
+		return err
+	}
+
+	filePath := fmt.Sprintf("%s%s", c.UploadId, info.Name())
+
+	// New multipart writer.
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	field, _ := writer.CreateFormField("path")
+	field.Write([]byte(filePath))
+
+	field, _ = writer.CreateFormField("name")
+	field.Write([]byte(stat.Name()))
+
+	field, _ = writer.CreateFormField("dir")
+	field.Write([]byte(info.Dir))
+
+	field, _ = writer.CreateFormField("is_dir")
+	field.Write([]byte("false"))
+
+	writer.Close()
+
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body.Bytes()))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	fmt.Fprintln(opts.IO.Out, fmt.Sprintf("Uploading %s", infoColor(stat.Name())))
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Fprintln(opts.IO.Out, cs.Red(err.Error()))
+		return err
+	}
+	code := resp.Status
+	if resp.StatusCode == http.StatusCreated {
+		fmt.Fprintf(opts.IO.Out, "%s uploaded\n", cs.SuccessIcon())
+	} else {
+		respBody, _ := io.ReadAll(resp.Body)
+		fmt.Fprintln(opts.IO.Out, cs.WarningIcon(), cs.Blue(code), cs.Yellow(string(respBody)))
 	}
 
 	return nil
@@ -151,8 +237,8 @@ func uploadFile(opts *Options, info FileInfo) error {
 		respBody, _ := io.ReadAll(resp.Body)
 		fmt.Fprintln(opts.IO.Out, cs.WarningIcon(), cs.Blue(code), cs.Yellow(string(respBody)))
 	}
-	return nil
 
+	return nil
 }
 
 type NotifiableReader struct {

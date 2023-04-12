@@ -18,9 +18,11 @@ var (
 	Dir     = 0
 	Root    = File{ID: 0, Dir: 0}
 	Current = Root
+	Page    = 1
 )
 
 func Cd(dir File) {
+	Page = 1
 	if dir.Parent == nil {
 		cpy := Current
 		dir.Parent = &cpy
@@ -34,10 +36,14 @@ func Ls(f *factory.Factory) {
 	client, _ := f.HttpClient()
 
 	cfg, _ := f.Config()
+
+	cs := f.IOStreams.ColorScheme()
+	infoColor := cs.Cyan
 	hostname, _ := cfg.DefaultHost()
 
 	query := url.Values{}
-	query.Add("size", "100")
+	query.Add("size", "20")
+	query.Add("page", strconv.Itoa(Page))
 	//query.Add("sort", `{"id":"desc"}`)
 	query.Add("dir", strconv.Itoa(int(Dir)))
 
@@ -46,6 +52,7 @@ func Ls(f *factory.Factory) {
 	req, _ := http.NewRequest(http.MethodGet, apiUrl, nil)
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Fprintln(f.IOStreams.Out, cs.Red(err.Error()))
 		return
 	}
 
@@ -57,9 +64,6 @@ func Ls(f *factory.Factory) {
 	}
 	Files = files.Files
 
-	cs := f.IOStreams.ColorScheme()
-	infoColor := cs.Cyan
-
 	tp := tableprinter.New(f.IOStreams)
 	tp.HeaderRow("ID", "Name", "Size", "Path", "Date")
 	for _, f := range files.Files {
@@ -69,7 +73,11 @@ func Ls(f *factory.Factory) {
 		} else {
 			tp.AddField(f.Name, tableprinter.WithColor(infoColor))
 		}
-		tp.AddField(fmt.Sprintf("%d", f.Size))
+		if f.Size > 1<<10 {
+			tp.AddField(fmt.Sprintf("%d (%s)", f.Size, ByteSize(f.Size).String()))
+		} else {
+			tp.AddField(fmt.Sprintf("%d", f.Size))
+		}
 		tp.AddField(f.Path)
 		tp.AddField(f.CreatedAt.Format("2006-01-02 15:04:05"))
 		tp.EndRow()
@@ -97,4 +105,27 @@ type File struct {
 	Dir       uint      `json:"dir"`
 	IsDir     bool      `json:"is_dir"`
 	Parent    *File     `json:"-"`
+}
+
+type ByteSize float64
+
+const (
+	KB ByteSize = 1 << (10 * (iota + 1))
+	MB
+	GB
+	TB
+)
+
+func (b ByteSize) String() string {
+	switch {
+	case b >= TB:
+		return fmt.Sprintf("%.1fT", b/TB)
+	case b >= GB:
+		return fmt.Sprintf("%.1fG", b/GB)
+	case b >= MB:
+		return fmt.Sprintf("%.1fM", b/MB)
+	case b >= KB:
+		return fmt.Sprintf("%.1fK", b/KB)
+	}
+	return fmt.Sprintf("%.1fB", b)
 }
