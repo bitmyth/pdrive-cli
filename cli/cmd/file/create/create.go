@@ -37,7 +37,9 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 	opts.IO = f.IOStreams
 	opts.Config, _ = f.Config()
 	cmd := &cobra.Command{
-		Use: "create --name | -n",
+		Use:     "create --name | -n",
+		Short:   "Create file from stdin",
+		Example: `cat | pd file create`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			info := FileInfo{
