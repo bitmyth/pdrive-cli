@@ -41,6 +41,9 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		Short:   "Create file from stdin",
 		Example: `cat | pd file create`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if opts.File == "" {
+				opts.File = time.Now().Format(time.RFC3339) + ".txt"
+			}
 
 			info := FileInfo{
 				FileName: opts.File,
