@@ -41,7 +41,7 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			info := FileInfo{
-				FileName: "test",
+				FileName: opts.File,
 				Content:  ReadStdIn(),
 				Dir:      "",
 				FileSize: 0,
@@ -50,7 +50,7 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 			return createFile(opts, info)
 		},
 	}
-	cmd.Flags().StringVarP(&opts.File, "file", "f", "", "absolute file path")
+	cmd.Flags().StringVarP(&opts.File, "name", "n", "", "file name")
 
 	return cmd
 }
