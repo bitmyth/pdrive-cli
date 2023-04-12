@@ -5,6 +5,7 @@ import (
 	authCmd "github.com/bitmyth/pdrive-cli/cli/cmd/auth"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/factory"
 	fileCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file"
+	catCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/cat"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/file/cd"
 	fileDeleteCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/delete"
 	fileDownloadCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/download"
@@ -59,6 +60,8 @@ func runRoot(f *factory.Factory) {
 		}
 		op := strings.Split(input, " ")
 		switch op[0] {
+		case "cat":
+			catCmd.Cat(f, op[1])
 		case "d":
 			fileDownloadCmd.Download(f, op[1])
 		case "u":
