@@ -118,18 +118,18 @@ func createFile(opts *Options, info FileInfo) error {
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	fmt.Fprintln(opts.IO.Out, fmt.Sprintf("Uploading %s", infoColor(info.Name())))
+	_, _ = fmt.Fprintln(opts.IO.Out, fmt.Sprintf("Uploading %s", infoColor(info.Name())))
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Fprintln(opts.IO.Out, cs.Red(err.Error()))
+		_, _ = fmt.Fprintln(opts.IO.Out, cs.Red(err.Error()))
 		return err
 	}
 	code := resp.Status
 	if resp.StatusCode == http.StatusCreated {
-		fmt.Fprintf(opts.IO.Out, "%s uploaded\n", cs.SuccessIcon())
+		_, _ = fmt.Fprintf(opts.IO.Out, "%s uploaded\n", cs.SuccessIcon())
 	} else {
 		respBody, _ := io.ReadAll(resp.Body)
-		fmt.Fprintln(opts.IO.Out, cs.WarningIcon(), cs.Blue(code), cs.Yellow(string(respBody)))
+		_, _ = fmt.Fprintln(opts.IO.Out, cs.WarningIcon(), cs.Blue(code), cs.Yellow(string(respBody)))
 	}
 	return nil
 
