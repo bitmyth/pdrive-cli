@@ -65,14 +65,10 @@ func ReadStdIn() string {
 	var buf bytes.Buffer
 	for {
 		stopped := scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			println("error", err.Error())
+		}
 		if !stopped {
-			if err := scanner.Err(); err != nil {
-				if err != io.EOF {
-					fmt.Fprintln(os.Stderr, err)
-					println("END")
-				}
-				break
-			}
 			break
 		}
 
