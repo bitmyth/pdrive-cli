@@ -22,6 +22,7 @@ var (
 )
 
 func Cd(dir File) {
+	Page = 1
 	if dir.Parent == nil {
 		cpy := Current
 		dir.Parent = &cpy
