@@ -36,6 +36,9 @@ func Ls(f *factory.Factory) {
 	client, _ := f.HttpClient()
 
 	cfg, _ := f.Config()
+
+	cs := f.IOStreams.ColorScheme()
+	infoColor := cs.Cyan
 	hostname, _ := cfg.DefaultHost()
 
 	query := url.Values{}
@@ -49,6 +52,7 @@ func Ls(f *factory.Factory) {
 	req, _ := http.NewRequest(http.MethodGet, apiUrl, nil)
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Fprintln(f.IOStreams.Out, cs.Red(err.Error()))
 		return
 	}
 
@@ -59,9 +63,6 @@ func Ls(f *factory.Factory) {
 		println(string(respData))
 	}
 	Files = files.Files
-
-	cs := f.IOStreams.ColorScheme()
-	infoColor := cs.Cyan
 
 	tp := tableprinter.New(f.IOStreams)
 	tp.HeaderRow("ID", "Name", "Size", "Path", "Date")
