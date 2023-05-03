@@ -19,6 +19,7 @@ type Config interface {
 	UnsetHost(string)
 	Hosts() ([]string, string)
 	DefaultHost() (string, string)
+	DefaultScheme() (string, string)
 	Write() error
 }
 
@@ -89,6 +90,10 @@ func (c *cfg) UnsetHost(hostname string) {
 
 func (c *cfg) Hosts() ([]string, string) {
 	return baseConfig.Hosts()
+}
+
+func (c *cfg) DefaultScheme() (string, string) {
+	return baseConfig.DefaultScheme()
 }
 
 func (c *cfg) DefaultHost() (string, string) {

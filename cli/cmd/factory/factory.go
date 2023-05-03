@@ -107,5 +107,9 @@ func httpSchema(f *Factory) string {
 		return "http"
 	}
 
+	if s, _ = cfg.DefaultScheme(); s != "" {
+		return s
+	}
+
 	return "https"
 }
