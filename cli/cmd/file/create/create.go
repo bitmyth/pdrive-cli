@@ -45,11 +45,13 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 				opts.File = time.Now().Format(time.RFC3339) + ".txt"
 			}
 
+			content := ReadStdIn()
+
 			info := FileInfo{
 				FileName: opts.File,
-				Content:  ReadStdIn(),
+				Content:  content,
 				Dir:      "",
-				FileSize: 0,
+				FileSize: int64(len(content)),
 			}
 
 			return createFile(opts, info)
@@ -75,7 +77,7 @@ func ReadStdIn() string {
 		buf.WriteString("\n")
 		buf.Write(scanner.Bytes())
 	}
-	//fmt.Println(buf.String())
+
 	return buf.String()
 }
 
