@@ -46,7 +46,6 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 			}
 
 			content := ReadStdIn()
-			println("--", content)
 
 			info := FileInfo{
 				FileName: opts.FileName,
