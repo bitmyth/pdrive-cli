@@ -19,4 +19,5 @@ clirelease:
 	GOOS=darwin GOARCH=amd64 GOGC=off go build -o pd_darwin_amd64 cli/cmd/pd/main.go
 	GOOS=linux GOARCH=amd64 GOGC=off go build -o pd_linux_amd64 cli/cmd/pd/main.go
 install:
+	go generate cli/build/version.go
 	go install ./cli/cmd/pd
