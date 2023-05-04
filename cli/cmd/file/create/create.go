@@ -22,7 +22,7 @@ type Options struct {
 	IO         *iostreams.IOStreams
 	Config     config.Config
 	Org        string
-	File       string
+	FileName   string
 	Dir        string
 	HttpSchema string
 	Exclude    []string
@@ -41,14 +41,15 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		Short:   "Create file from stdin",
 		Example: `cat | pd file create`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.File == "" {
-				opts.File = time.Now().Format(time.RFC3339) + ".txt"
+			if opts.FileName == "" {
+				opts.FileName = time.Now().Format(time.RFC3339) + ".txt"
 			}
 
 			content := ReadStdIn()
+			println("--", content)
 
 			info := FileInfo{
-				FileName: opts.File,
+				FileName: opts.FileName,
 				Content:  content,
 				Dir:      "",
 				FileSize: int64(len(content)),
@@ -57,7 +58,7 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 			return createFile(opts, info)
 		},
 	}
-	cmd.Flags().StringVarP(&opts.File, "name", "n", "", "file name")
+	cmd.Flags().StringVarP(&opts.FileName, "name", "n", "", "file name")
 
 	return cmd
 }
@@ -96,10 +97,11 @@ func createFile(opts *Options, info FileInfo) error {
 	writer := multipart.NewWriter(body)
 	fw, err := writer.CreateFormFile("file", info.Name())
 	if err != nil {
-		_, err = io.Copy(fw, strings.NewReader(info.Content))
-		if err != nil {
-			return err
-		}
+		return err
+	}
+
+	_, err = io.Copy(fw, strings.NewReader(info.Content))
+	if err != nil {
 		return err
 	}
 
