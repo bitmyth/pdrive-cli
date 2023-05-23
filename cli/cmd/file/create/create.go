@@ -12,6 +12,7 @@ import (
 	"io/fs"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -46,6 +47,11 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 			}
 
 			content := ReadStdIn()
+
+			_, err := url.Parse(content)
+			if err == nil {
+				opts.FileName = content
+			}
 
 			info := FileInfo{
 				FileName: opts.FileName,
