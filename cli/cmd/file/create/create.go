@@ -48,9 +48,9 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 
 			content := ReadStdIn()
 
-			_, err := url.Parse(content)
+			_, err := url.Parse(strings.TrimSpace(content))
 			if err == nil {
-				opts.FileName = content
+				opts.FileName = strings.TrimSpace(content)
 			}
 
 			info := FileInfo{
