@@ -8,6 +8,7 @@ import (
 	"github.com/bitmyth/pdrive-cli/cli/config"
 	"github.com/bitmyth/pdrive-cli/cli/iostreams"
 	"github.com/spf13/cobra"
+	"html"
 	"io"
 	"io/fs"
 	"mime/multipart"
@@ -111,7 +112,7 @@ func createFile(opts *Options, info FileInfo) error {
 	}
 
 	field, _ := writer.CreateFormField("name")
-	field.Write([]byte(info.Name()))
+	field.Write([]byte(html.EscapeString(info.Name())))
 
 	field, _ = writer.CreateFormField("dir")
 	field.Write([]byte(info.Dir))
