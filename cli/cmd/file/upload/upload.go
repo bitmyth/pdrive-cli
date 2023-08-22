@@ -151,8 +151,8 @@ func uploadFile(opts *Options, info FileInfo) error {
 		respBody, _ := io.ReadAll(resp.Body)
 		fmt.Fprintln(opts.IO.Out, cs.WarningIcon(), cs.Blue(code), cs.Yellow(string(respBody)))
 	}
-	return nil
 
+	return nil
 }
 
 type NotifiableReader struct {
