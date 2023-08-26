@@ -42,11 +42,16 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		Short:   "Create file from stdin",
 		Example: `cat | pd file create`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.FileName == "" {
-				opts.FileName = time.Now().Format(time.RFC3339) + ".txt"
-			}
-
 			content := ReadStdIn()
+
+			if opts.FileName == "" {
+				c := []rune(content)
+				if len(c) > 15 {
+					opts.FileName = string(c[0:10]) + ".." + string(c[len(c)-5:])
+				} else {
+					opts.FileName = string(c)
+				}
+			}
 
 			_, err := url.Parse(strings.TrimSpace(content))
 			if err == nil {
