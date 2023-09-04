@@ -107,6 +107,7 @@ func uploadBigFile(opts *Options, info FileInfo) error {
 
 	url := fmt.Sprintf("%s://%s/v1/files", opts.HttpSchema, hostname)
 
+	println(url)
 	// Chunked Upload
 	client.BaseUrl = url
 	stat, err := os.Stat(info.Path)

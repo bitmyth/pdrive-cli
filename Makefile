@@ -12,8 +12,10 @@ pdcli:
 	go generate cli/build/version.go
 	go build -o pd $(CLI)
 
-clirelease:
+version:
 	go generate cli/build/version.go
+
+clirelease:
 	GOOS=windows GOARCH=amd64 GOGC=off go build -o pd_windows_amd64 cli/cmd/pd/main.go
 	GOOS=darwin GOARCH=arm64 GOGC=off go build -o pd_darwin_arm64 cli/cmd/pd/main.go
 	GOOS=darwin GOARCH=amd64 GOGC=off go build -o pd_darwin_amd64 cli/cmd/pd/main.go
