@@ -71,8 +71,11 @@ func uploadRun(opts *Options) error {
 	}
 	stat, err := file.Stat()
 	if err != nil {
+		fmt.Fprintln(opts.IO.Out, errColor(err.Error()))
 		return err
 	}
+	fmt.Fprintln(opts.IO.Out, file.Name(), " Size: ", stat.Size())
+
 	if stat.IsDir() {
 		err = uploadDir(opts)
 		if err != nil {
@@ -136,7 +139,7 @@ func uploadBigFile(opts *Options, info FileInfo) error {
 	field.Write([]byte(filePath))
 
 	field, _ = writer.CreateFormField("name")
-	field.Write([]byte(file.Name()))
+	field.Write([]byte(stat.Name()))
 
 	field, _ = writer.CreateFormField("dir")
 	field.Write([]byte(info.Dir))
@@ -152,7 +155,7 @@ func uploadBigFile(opts *Options, info FileInfo) error {
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	fmt.Fprintln(opts.IO.Out, fmt.Sprintf("Uploading %s", infoColor(file.Name())))
+	fmt.Fprintln(opts.IO.Out, fmt.Sprintf("Uploading %s", infoColor(stat.Name())))
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		fmt.Fprintln(opts.IO.Out, cs.Red(err.Error()))

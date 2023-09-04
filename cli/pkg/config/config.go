@@ -286,6 +286,12 @@ func defaultHost(cfg *Config) (string, string) {
 	if host := os.Getenv(Host); host != "" {
 		return host, Host
 	}
+
+	s, _ := cfg.Get([]string{"env"})
+	if s == "dev" {
+		return "localhost", ""
+	}
+
 	if cfg != nil {
 		keys, err := cfg.Get([]string{defaultHostKey})
 		if err == nil && keys != "" {
