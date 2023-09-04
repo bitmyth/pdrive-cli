@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/MakeNowJust/heredoc v1.0.0
-	github.com/bitmyth/upload v1.0.5
+	github.com/bitmyth/upload v1.0.10
 	github.com/briandowns/spinner v1.19.0
 	github.com/cli/go-gh v1.0.0
 	github.com/cli/safeexec v1.0.0

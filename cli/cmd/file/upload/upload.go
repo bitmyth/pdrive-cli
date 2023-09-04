@@ -116,7 +116,7 @@ func uploadBigFile(opts *Options, info FileInfo) error {
 		return err
 	}
 
-	c := client.Client{FileInfo: stat, Filepath: info.Path}
+	c := &client.Client{FileInfo: stat, Filepath: info.Path, Transport: httpClient.Transport}
 
 	err = c.NewUpload()
 	if err != nil {
