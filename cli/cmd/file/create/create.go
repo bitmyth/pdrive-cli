@@ -53,9 +53,9 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 				}
 			}
 
-			_, err := url.Parse(content)
+			u, err := url.ParseRequestURI(content)
 			if err == nil {
-				opts.FileName = content
+				opts.FileName = u.String()
 			}
 
 			info := FileInfo{
