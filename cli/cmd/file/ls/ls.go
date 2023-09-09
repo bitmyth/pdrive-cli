@@ -73,7 +73,11 @@ func Ls(f *factory.Factory) {
 		} else {
 			tp.AddField(f.Name, tableprinter.WithColor(infoColor))
 		}
-		tp.AddField(fmt.Sprintf("%d", f.Size))
+		if f.Size > 1<<10 {
+			tp.AddField(fmt.Sprintf("%d (%s)", f.Size, ByteSize(f.Size).String()))
+		} else {
+			tp.AddField(fmt.Sprintf("%d", f.Size))
+		}
 		tp.AddField(f.Path)
 		tp.AddField(f.CreatedAt.Format("2006-01-02 15:04:05"))
 		tp.EndRow()
@@ -101,4 +105,27 @@ type File struct {
 	Dir       uint      `json:"dir"`
 	IsDir     bool      `json:"is_dir"`
 	Parent    *File     `json:"-"`
+}
+
+type ByteSize float64
+
+const (
+	KB ByteSize = 1 << (10 * (iota + 1))
+	MB
+	GB
+	TB
+)
+
+func (b ByteSize) String() string {
+	switch {
+	case b >= TB:
+		return fmt.Sprintf("%.1fT", b/TB)
+	case b >= GB:
+		return fmt.Sprintf("%.1fG", b/GB)
+	case b >= MB:
+		return fmt.Sprintf("%.1fM", b/MB)
+	case b >= KB:
+		return fmt.Sprintf("%.1fK", b/KB)
+	}
+	return fmt.Sprintf("%.1fB", b)
 }
