@@ -54,7 +54,7 @@ func NewCmdRoot(f *factory.Factory) *cobra.Command {
 
 func runRoot(f *factory.Factory) {
 	for {
-		input, err := f.Prompter.Input(">", "")
+		input, err := f.Prompter.Input("", "")
 		if err != nil {
 			return
 		}

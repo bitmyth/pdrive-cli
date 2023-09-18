@@ -85,7 +85,7 @@ func (p *surveyPrompter) MultiSelect(message, defaultValue string, options []str
 
 func (p *surveyPrompter) ask(q survey.Prompt, response interface{}, opts ...survey.AskOpt) error {
 	opts = append(opts, survey.WithStdio(p.stdin, p.stdout, p.stderr), survey.WithIcons(func(set *survey.IconSet) {
-		set.Question.Text = "/"
+		set.Question.Text = ""
 		set.Question.Format = "green"
 	}))
 	err := survey.AskOne(q, response, opts...)
