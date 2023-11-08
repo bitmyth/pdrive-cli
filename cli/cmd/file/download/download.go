@@ -40,7 +40,13 @@ func Download(f *factory.Factory, id string) {
 	// save file
 	cd := resp.Header.Get("Content-Disposition")
 	//println("Content-Disposition ", cd)
-	name := strings.Split(cd, "=")[1]
+	var name string
+	if cd != "" {
+		name = strings.Split(cd, "=")[1]
+	} else {
+		name = id
+	}
+
 	fmt.Fprintln(f.IOStreams.Out, "Downloading ", infoColor(name))
 
 	saveFile, err := os.Create(name)
@@ -54,19 +60,22 @@ func Download(f *factory.Factory, id string) {
 	size, _ := io.Copy(saveFile, io.TeeReader(resp.Body, gauge))
 	_ = saveFile.Close()
 	gauge.Stop()
+	<-gauge.stopped
 
 	fmt.Fprintln(f.IOStreams.Out, "Size:", infoColor(fmt.Sprintf("%d", size)))
 }
 
 func NewSpeedGauge() *SpeedGauge {
 	return &SpeedGauge{
-		stop: make(chan struct{}),
+		stop:    make(chan struct{}),
+		stopped: make(chan struct{}, 1),
 	}
 }
 
 type SpeedGauge struct {
-	count int64
-	stop  chan struct{}
+	count   int64
+	stop    chan struct{}
+	stopped chan struct{}
 }
 
 func (s *SpeedGauge) Write(b []byte) (int, error) {
@@ -85,6 +94,8 @@ func (s *SpeedGauge) Show() {
 	for range ticker.C {
 		select {
 		case <-s.stop:
+			fmt.Print("\r")
+			s.stopped <- struct{}{}
 			return
 		default:
 		}
