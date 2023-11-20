@@ -1,11 +1,11 @@
 module github.com/bitmyth/pdrive-cli
 
-go 1.19
+go 1.21
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/MakeNowJust/heredoc v1.0.0
-	github.com/bitmyth/upload v1.1.0
+	github.com/bitmyth/upload v1.2.2
 	github.com/briandowns/spinner v1.19.0
 	github.com/cli/go-gh v1.0.0
 	github.com/cli/safeexec v1.0.0
