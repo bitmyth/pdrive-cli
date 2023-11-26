@@ -99,7 +99,9 @@ func (s *SpeedGauge) Show() {
 			return
 		default:
 		}
-		fmt.Printf("\r %s/s", ls.ByteSize(atomic.LoadInt64(&s.count)).String())
+
+		print("\033[2K\r") // Erase current line
+		fmt.Printf("%s/s", ls.ByteSize(atomic.LoadInt64(&s.count)).String())
 		atomic.StoreInt64(&s.count, 0)
 	}
 }
