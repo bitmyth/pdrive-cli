@@ -11,6 +11,7 @@ import (
 	fileDownloadCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/download"
 	fileLsCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/ls"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/file/mkdir"
+	fileSearchCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/search"
 	fileShareCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/share"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/file/upload"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/version"
@@ -58,6 +59,11 @@ func runRoot(f *factory.Factory) {
 		if err != nil {
 			return
 		}
+
+		if strings.HasPrefix(input, "/") {
+			fileSearchCmd.Search(f, input[1:])
+		}
+
 		op := strings.Split(input, " ")
 		switch op[0] {
 		case "cat":
