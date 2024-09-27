@@ -57,3 +57,31 @@ func (RSA) Decrypt(hexCipher string) ([]byte, error) {
 
 	return plaintext, nil
 }
+
+func (r RSA) ExtractPublicKey(privateKeyPEM []byte) ([]byte, error) {
+	// Decode the PEM file
+	block, _ := pem.Decode(privateKeyPEM)
+	if block == nil {
+		log.Fatal("Failed to decode PEM block containing the private key")
+	}
+
+	// Parse the private key
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		log.Fatalf("Error parsing private key: %v", err)
+	}
+
+	// Extract the public key
+	publicKey := privateKey.Public()
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(publicKey)
+	if err != nil {
+		panic(err)
+	}
+
+	publicKeyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PUBLIC KEY",
+		Bytes: publicKeyBytes,
+	})
+
+	return publicKeyPEM, nil
+}

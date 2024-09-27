@@ -1,8 +1,10 @@
 package cat
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/factory"
+	"github.com/bitmyth/pdrive-cli/cli/secret"
 	"io"
 	"net/url"
 	"time"
@@ -33,7 +35,17 @@ func Cat(f *factory.Factory, id string) {
 	respData, _ := io.ReadAll(resp.Body)
 
 	infoColor := cs.Cyan
+
 	// save file
 	fmt.Fprintln(f.IOStreams.Out, "Size:", infoColor(fmt.Sprintf("%d", len(respData))))
 	fmt.Fprintln(f.IOStreams.Out, cs.Green(string(respData)))
+
+	_, err = hex.DecodeString(string(respData))
+	if err == nil {
+		decrypt, er := secret.RSA{}.Decrypt(string(respData))
+		if er == nil {
+			fmt.Fprintln(f.IOStreams.Out, cs.Cyan("Decrypted"))
+			fmt.Fprintln(f.IOStreams.Out, cs.Green(string(decrypt)))
+		}
+	}
 }

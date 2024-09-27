@@ -61,3 +61,17 @@ func TestRSADecrypt(t *testing.T) {
 
 	fmt.Printf("Decrypted: %s\n", plaintext)
 }
+
+func TestExtractPublicKey(t *testing.T) {
+	file, err := os.ReadFile("private.pem")
+	if err != nil {
+		return
+	}
+	key, err := RSA{}.ExtractPublicKey(file)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Logf("%s", key)
+}
