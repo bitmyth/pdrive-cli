@@ -17,22 +17,22 @@ type RSA struct {
 	privateKeyPEM string
 }
 
-func NewRSA(privateKeyPEM string) *RSA {
+func NewRSA(privateKeyPEMFile string) *RSA {
 	rsa := &RSA{}
-	if privateKeyPEM == "" {
+	if privateKeyPEMFile == "" {
 		return rsa
 	}
 
-	file, err := os.ReadFile(privateKeyPEM)
+	privateKey, err := os.ReadFile(privateKeyPEMFile)
 	if err != nil {
-		println(privateKeyPEM, " keyfile not exists")
+		println(privateKeyPEMFile, " keyfile not exists")
 		return rsa
 	}
 
-	rsa.privateKeyPEM = string(file)
-	println("load keyfile ", privateKeyPEM)
+	rsa.privateKeyPEM = string(privateKey)
+	println("load keyfile ", privateKeyPEMFile)
 
-	publicKeyPEM, err := rsa.ExtractPublicKey(file)
+	publicKeyPEM, err := rsa.ExtractPublicKey(privateKey)
 	if err == nil {
 		rsa.publicKeyPEM = string(publicKeyPEM)
 	}
