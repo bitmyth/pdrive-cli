@@ -3,13 +3,16 @@ package create
 import (
 	"bufio"
 	"bytes"
+	"encoding/hex"
 	"fmt"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/factory"
 	"github.com/bitmyth/pdrive-cli/cli/config"
 	"github.com/bitmyth/pdrive-cli/cli/iostreams"
+	"github.com/bitmyth/pdrive-cli/cli/secret"
 	"github.com/spf13/cobra"
 	"io"
 	"io/fs"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -27,6 +30,7 @@ type Options struct {
 	Dir        string
 	HttpSchema string
 	Exclude    []string
+	IsSecret   bool
 }
 
 func NewCmdCreate(f *factory.Factory) *cobra.Command {
@@ -43,6 +47,16 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		Example: `cat | pd file create`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			content := strings.TrimSpace(ReadStdIn())
+			if opts.IsSecret {
+				cipher, err := secret.RSA{}.Encrypt([]byte(content))
+				if err != nil {
+					log.Fatal(err)
+					return err
+				}
+
+				content = hex.EncodeToString(cipher)
+				println(content)
+			}
 
 			if opts.FileName == "" {
 				c := []rune(strings.ReplaceAll(content, "\n", ""))
@@ -69,6 +83,7 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&opts.FileName, "name", "n", "", "file name")
+	cmd.Flags().BoolVarP(&opts.IsSecret, "secret", "s", false, "use encrypt")
 
 	return cmd
 }
