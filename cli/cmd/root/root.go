@@ -15,7 +15,9 @@ import (
 	fileShareCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/share"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/file/upload"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/version"
+	"github.com/bitmyth/pdrive-cli/cli/config"
 	"github.com/spf13/cobra"
+	"path/filepath"
 	"strings"
 )
 
@@ -44,6 +46,9 @@ func NewCmdRoot(f *factory.Factory) *cobra.Command {
 	}
 
 	cmd.PersistentFlags().Bool("help", false, "Show help for command")
+
+	defaultKey := filepath.Join(config.ConfigDir(), "private.pem")
+	cmd.Flags().StringVar(&f.KeyFile, "key", defaultKey, "private key file path")
 
 	// Child commands
 	cmd.AddCommand(fileCmd.NewCmdFile(f))

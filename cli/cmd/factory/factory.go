@@ -18,6 +18,7 @@ type Factory struct {
 	Config     func() (config.Config, error)
 	Prompter   prompter.Prompter
 	HttpSchema string
+	KeyFile    string
 }
 
 func New() *Factory {

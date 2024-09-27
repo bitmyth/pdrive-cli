@@ -43,7 +43,8 @@ func TestGenerate(t *testing.T) {
 }
 
 func TestRSAEncrypt(t *testing.T) {
-	ciphertext, err := RSA{}.Encrypt([]byte("hello, world!"))
+	r := NewRSA("private.pem")
+	ciphertext, err := r.Encrypt([]byte("hello, world!"))
 	if err != nil {
 		panic(err)
 		return

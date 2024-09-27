@@ -1,5 +1,7 @@
 package secret
 
+// https://dev.to/elioenaiferrari/asymmetric-cryptography-with-golang-2ffd
+
 import (
 	"crypto/rand"
 	"crypto/rsa"
@@ -11,14 +13,36 @@ import (
 )
 
 type RSA struct {
+	publicKeyPEM  string
+	privateKeyPEM string
 }
 
-func (RSA) Encrypt(data []byte) ([]byte, error) {
-	publicKeyPEM, err := os.ReadFile("public.pem")
-	if err != nil {
-		return nil, err
+func NewRSA(privateKeyPEM string) *RSA {
+	rsa := &RSA{}
+	if privateKeyPEM == "" {
+		return rsa
 	}
-	publicKeyBlock, _ := pem.Decode(publicKeyPEM)
+
+	file, err := os.ReadFile(privateKeyPEM)
+	if err != nil {
+		println(privateKeyPEM, " keyfile not exists")
+		return rsa
+	}
+
+	rsa.privateKeyPEM = string(file)
+	println("load keyfile ", privateKeyPEM)
+
+	publicKeyPEM, err := rsa.ExtractPublicKey(file)
+	if err == nil {
+		rsa.publicKeyPEM = string(publicKeyPEM)
+	}
+
+	return rsa
+}
+
+func (r RSA) Encrypt(data []byte) ([]byte, error) {
+	publicKeyPEM := r.publicKeyPEM
+	publicKeyBlock, _ := pem.Decode([]byte(publicKeyPEM))
 	publicKey, err := x509.ParsePKIXPublicKey(publicKeyBlock.Bytes)
 	if err != nil {
 		return nil, err
@@ -33,12 +57,9 @@ func (RSA) Encrypt(data []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func (RSA) Decrypt(hexCipher string) ([]byte, error) {
-	privateKeyPEM, err := os.ReadFile("private.pem")
-	if err != nil {
-		return nil, err
-	}
-	privateKeyBlock, _ := pem.Decode(privateKeyPEM)
+func (r RSA) Decrypt(hexCipher string) ([]byte, error) {
+	privateKeyPEM := r.privateKeyPEM
+	privateKeyBlock, _ := pem.Decode([]byte(privateKeyPEM))
 	privateKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
 	if err != nil {
 		return nil, err

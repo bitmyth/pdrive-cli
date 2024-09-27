@@ -48,7 +48,8 @@ func NewCmdCreate(f *factory.Factory) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			content := strings.TrimSpace(ReadStdIn())
 			if opts.IsSecret {
-				cipher, err := secret.RSA{}.Encrypt([]byte(content))
+				rsa := secret.NewRSA(f.KeyFile)
+				cipher, err := rsa.Encrypt([]byte(content))
 				if err != nil {
 					log.Fatal(err)
 					return err

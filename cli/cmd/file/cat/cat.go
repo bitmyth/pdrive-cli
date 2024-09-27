@@ -42,7 +42,7 @@ func Cat(f *factory.Factory, id string) {
 
 	_, err = hex.DecodeString(string(respData))
 	if err == nil {
-		decrypt, er := secret.RSA{}.Decrypt(string(respData))
+		decrypt, er := secret.NewRSA(f.KeyFile).Decrypt(string(respData))
 		if er == nil {
 			fmt.Fprintln(f.IOStreams.Out, cs.Cyan("Decrypted"))
 			fmt.Fprintln(f.IOStreams.Out, cs.Green(string(decrypt)))
