@@ -3,6 +3,7 @@ package root
 import (
 	"github.com/MakeNowJust/heredoc"
 	authCmd "github.com/bitmyth/pdrive-cli/cli/cmd/auth"
+	"github.com/bitmyth/pdrive-cli/cli/cmd/crypto"
 	"github.com/bitmyth/pdrive-cli/cli/cmd/factory"
 	fileCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file"
 	catCmd "github.com/bitmyth/pdrive-cli/cli/cmd/file/cat"
@@ -54,6 +55,8 @@ func NewCmdRoot(f *factory.Factory) *cobra.Command {
 	cmd.AddCommand(fileCmd.NewCmdFile(f))
 	cmd.AddCommand(authCmd.NewCmdAuth(f))
 	cmd.AddCommand(version.NewCmdVersion(f))
+	cmd.AddCommand(crypto.NewCmdEncrypt(f))
+	cmd.AddCommand(crypto.NewCmdDecrypt(f))
 
 	return cmd
 }
