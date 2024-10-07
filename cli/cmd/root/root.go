@@ -49,7 +49,7 @@ func NewCmdRoot(f *factory.Factory) *cobra.Command {
 	cmd.PersistentFlags().Bool("help", false, "Show help for command")
 
 	defaultKey := filepath.Join(config.ConfigDir(), "private.pem")
-	cmd.Flags().StringVar(&f.KeyFile, "key", defaultKey, "private key file path")
+	cmd.PersistentFlags().StringVar(&f.KeyFile, "key", defaultKey, "private key file path")
 
 	// Child commands
 	cmd.AddCommand(fileCmd.NewCmdFile(f))
